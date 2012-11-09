@@ -1,7 +1,5 @@
-require 'active_support/json'
-
 module CopperEgg
-  class Utils
+  class Util
 
     attr_accessor :apikey
 

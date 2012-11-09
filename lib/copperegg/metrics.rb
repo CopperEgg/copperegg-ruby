@@ -5,7 +5,7 @@ module CopperEgg
 
     def initialize(apikey, apihost=nil)
       @apikey = apikey
-      @util = CopperEgg::Utils.new(@apikey, "revealmetrics", apihost)
+      @util = CopperEgg::Util.new(@apikey, "revealmetrics", apihost)
     end
 
     def store_sample(group_name, identifier, timestamp, metric_data)

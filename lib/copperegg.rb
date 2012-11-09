@@ -1,5 +1,5 @@
 require 'copperegg/metrics'
-require 'copperegg/utils'
+require 'copperegg/util'
 require 'net/http'
 require 'uri'
 

@@ -13,7 +13,7 @@ Gem::Specification.new do |s|
 
   s.platform = Gem::Platform::RUBY
   s.require_paths = %w[lib]
-  s.files         = `git ls-files`.split("\n")
+  s.files         = Dir["#{File.dirname(__FILE__)}/**/*"]
   s.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.executables   = `git ls-files -- bin/*`.split("\n").map{ |f| File.basename(f) }
   #s.add_dependency('multi_json', '>= 1.3.0')
