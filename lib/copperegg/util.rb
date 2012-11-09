@@ -1,3 +1,5 @@
+require 'multi_json'
+
 module CopperEgg
   class Util
 
@@ -39,7 +41,7 @@ module CopperEgg
         request = Net::HTTP::Get.new(uri.request_uri)
       else
         request = Net::HTTP::Post.new(uri.request_uri)
-        request.body = params.to_json
+        request.body = MultiJson.dump(params)
       end
       
       request.basic_auth(apikey, "U")
