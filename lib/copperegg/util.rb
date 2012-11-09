@@ -36,6 +36,11 @@ module CopperEgg
       uri = make_uri(api_cmd)
       http = Net::HTTP.new(uri.host, uri.port)
 
+      http.use_ssl = uri.scheme == 'https'
+      if !DEFAULTS[:ssl_verify_peer]
+        http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+      end
+
       if type == "get"
         uri.query = URI.encode_www_form(params) if !params.nil?
         request = Net::HTTP::Get.new(uri.request_uri)
