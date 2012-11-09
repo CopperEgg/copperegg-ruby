@@ -20,8 +20,8 @@ To build and install the development branch yourself from the latest source:
 $ git clone git@github.com:copperegg/copperegg-ruby.git
 $ cd copperegg-ruby
 $ git checkout develop
-$ rake gem
-$ gem install pkg/copperegg-ruby-{version}
+$ gem build copperegg.gemspec
+$ gem install copperegg-{version}.gem
 ```
 
 ## Getting Started
@@ -30,7 +30,7 @@ $ gem install pkg/copperegg-ruby-{version}
 
 ``` ruby
 require 'rubygems' # not necessary with ruby 1.9 but included for completeness
-require 'copperegg-ruby'
+require 'copperegg'
 
 # Get a Metrics object:
 apikey = 'sdf87xxxxxxxxxxxxxxxxxxxxx' # from the web UI
