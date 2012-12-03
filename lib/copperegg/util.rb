@@ -1,5 +1,3 @@
-require 'multi_json'
-
 module CopperEgg
   class Util
 
@@ -46,7 +44,7 @@ module CopperEgg
         request = Net::HTTP::Get.new(uri.request_uri)
       else
         request = Net::HTTP::Post.new(uri.request_uri)
-        request.body = MultiJson.dump(params)
+        request.body = jsonify_hash(params)
       end
       
       request.basic_auth(apikey, "U")
@@ -58,5 +56,16 @@ module CopperEgg
       return response
     end
 
+    private
+
+    def jsonify_hash(hash)
+      # so we don't need to require multi_json
+      json_string = hash.reduce([]) do |memo,keyval|
+        key, value = keyval
+        memo << "\"#{key}\":\"#{value}\""
+        memo
+      end.join(",")
+      return "{#{json_string}}"
+    end
   end
 end

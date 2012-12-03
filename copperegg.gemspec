@@ -16,7 +16,7 @@ Gem::Specification.new do |s|
   s.files         = Dir["#{File.dirname(__FILE__)}/**/*"]
   s.test_files    = Dir.glob("{test,spec,features}/*")
   s.executables = Dir.glob("bin/*")
-  s.add_dependency('multi_json', '>= 1.3.0')
+  #s.add_dependency('multi_json', '>= 1.3.0')
   #...
 
   #s.add_development_dependency 'rake',    '~> 0.9.0'
