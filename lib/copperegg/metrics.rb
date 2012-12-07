@@ -23,8 +23,26 @@ module CopperEgg
       return
     end
 
-    def samples(starttime, endtime, group_name, metricname)
-      samples = @util.make_api_get_request("/samples.json", @apikey, nil)
+    def samples(group_name, metricname, starttime, endtime)
+      return if group_name.nil?
+      return if metricname.nil?
+      return if endtime.nil? || endtime == Time.now.to_i
+      return if starttime.nil? || starttime == Time.now.to_i - 300
+
+      metric_name = []
+      metrics = {}
+      metric_gid = []
+      query = {}
+      params = {}
+
+      metric_name = [metricname]
+      metrics["metrics"] = metric_name
+      metric_gid = [metrics]
+      query[group_name] = metric_gid
+      params["queries"] = query
+
+      p params
+      samples = @util.make_api_get_request("/samples.json", @apikey, params)
       return samples
     end
 

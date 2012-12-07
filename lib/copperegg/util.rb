@@ -42,8 +42,8 @@ module CopperEgg
       end
 
       if type == "get"
-        uri.query = URI.encode_www_form(params) if !params.nil?
         request = Net::HTTP::Get.new(uri.request_uri)
+        request.body = MultiJson.dump(params)
       else
         request = Net::HTTP::Post.new(uri.request_uri)
         request.body = MultiJson.dump(params)
@@ -55,7 +55,11 @@ module CopperEgg
       if response.code != "200"
         return nil
       end
-      return response
+      if type == "get"
+        return response.body
+      else
+        return response
+      end
     end
 
   end
