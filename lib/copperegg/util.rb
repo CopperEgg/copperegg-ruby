@@ -60,6 +60,7 @@ module CopperEgg
         connect_try_count += 1
         if connect_try_count > 1
           log "#{e.inspect}"
+          raise e
         end
         sleep 0.5
       retry
