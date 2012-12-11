@@ -76,7 +76,9 @@ module CopperEgg
       dashes = @util.make_api_get_request("/dashboards.json", @apikey, nil)
       return nil if dashes.nil?
 
-      dashboards = JSON.parse(dashes.body)
+#      dashboards = JSON.parse(dashes.body)
+# modified 12-10-2012 ... get returns the body
+      dashboards = JSON.parse(dashes)
       dashboards.each do |dash|
         if dash["name"] == dashboard_name
           return dash
