@@ -63,7 +63,7 @@ module CopperEgg
           raise e
         end
         sleep 0.5
-      retry
+        retry
       end
 
       if response == nil || response.code != "200"
