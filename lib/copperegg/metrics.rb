@@ -19,8 +19,7 @@ module CopperEgg
       payload["identifier"] = identifier
       payload["values"] = metric_data
 
-      response = @util.make_api_post_request("/samples/#{group_name}.json", @apikey, payload)
-      return
+      @util.make_api_post_request("/samples/#{group_name}.json", @apikey, payload)
     end
 
     def samples(group_name, metricname, starttime=nil, duration=nil, sample_size=nil)
@@ -42,19 +41,16 @@ module CopperEgg
       params["duration"] = duration if !duration.nil?
       params["sample_size"] = sample_size if !sample_size.nil?
 
-      samples = @util.make_api_get_request("/samples.json", @apikey, params)
-      return samples
+      @util.make_api_get_request("/samples.json", @apikey, params)
     end
 
     def metric_groups
       # return an array of metric groups
-      mgroup = @util.make_api_get_request("/metric_groups.json", @apikey, nil)
-      return mgroup
+      @util.make_api_get_request("/metric_groups.json", @apikey, nil)
     end
 
     def metric_group(group_name)
-      mgroup = @util.make_api_get_request("/metric_groups/#{group_name}.json", @apikey, nil)
-      return mgroup
+      @util.make_api_get_request("/metric_groups/#{group_name}.json", @apikey, nil)
     end
 
     def metric_names(group_name)
@@ -69,15 +65,15 @@ module CopperEgg
     end
 
     def create_metric_group(group_name, group_definition)
-      response = @util.make_api_post_request("/metric_groups.json", @apikey, group_definition)
+      @util.make_api_post_request("/metric_groups.json", @apikey, group_definition)
     end
 
     def dashboard(dashboard_name)
       dashes = @util.make_api_get_request("/dashboards.json", @apikey, nil)
       return nil if dashes.nil?
 
-#      dashboards = JSON.parse(dashes.body)
-# modified 12-10-2012 ... get returns the body
+      # dashboards = JSON.parse(dashes.body)
+      # modified 12-10-2012 ... get returns the body
       dashboards = JSON.parse(dashes)
       dashboards.each do |dash|
         if dash["name"] == dashboard_name
@@ -89,11 +85,8 @@ module CopperEgg
     end
 
     def create_dashboard(dashcfg)
-      response = @util.make_api_post_request("/dashboards.json", @apikey, dashcfg)
+      @util.make_api_post_request("/dashboards.json", @apikey, dashcfg)
     end
-
-    private
-
 
   end
 end

@@ -16,19 +16,17 @@ module CopperEgg
     end
 
     def make_api_get_request(api_cmd, apikey, params)
-      response = make_api_request("get", api_cmd, apikey, params)
-      return response
+      make_api_request("get", api_cmd, apikey, params)
     end
 
     def make_api_post_request(api_cmd, apikey, body)
-      response = make_api_request("post", api_cmd, apikey, body)
-      return response
+      make_api_request("post", api_cmd, apikey, body)
     end
 
     private
 
     def make_uri(api_cmd)
-      return URI.parse("#{@apihost}/#{API_VERSION}/#{@product}#{api_cmd}")
+      URI.parse("#{@apihost}/#{API_VERSION}/#{@product}#{api_cmd}")
     end
 
     def make_api_request(type, api_cmd, apikey, params)
