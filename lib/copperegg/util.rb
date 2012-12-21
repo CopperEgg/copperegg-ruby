@@ -42,20 +42,38 @@ module CopperEgg
       end
 
       if type == "get"
-        uri.query = URI.encode_www_form(params) if !params.nil?
         request = Net::HTTP::Get.new(uri.request_uri)
+        request.body = MultiJson.dump(params)
       else
         request = Net::HTTP::Post.new(uri.request_uri)
         request.body = MultiJson.dump(params)
       end
-      
+
       request.basic_auth(apikey, "U")
       request["Content-Type"] = "application/json"
-      response = http.request(request)
-      if response.code != "200"
+
+      connect_try_count = 0
+      response = nil
+      begin
+        response = http.request(request)
+      rescue Exception => e
+        connect_try_count += 1
+        if connect_try_count > 1
+          log "#{e.inspect}"
+          raise e
+        end
+        sleep 0.5
+        retry
+      end
+
+      if response == nil || response.code != "200"
         return nil
       end
-      return response
+      if type == "get"
+        return response.body
+      else
+        return response
+      end
     end
 
   end

@@ -1,6 +1,7 @@
 require 'copperegg/metrics'
 require 'copperegg/util'
 require 'net/http'
+require 'net/https'
 require 'uri'
 
   API_VERSION = 'v2'

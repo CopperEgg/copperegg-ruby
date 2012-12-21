@@ -23,8 +23,26 @@ module CopperEgg
       return
     end
 
-    def samples(starttime, endtime, group_name, metricname)
-      samples = @util.make_api_get_request("/samples.json", @apikey, nil)
+    def samples(group_name, metricname, starttime=nil, duration=nil, sample_size=nil)
+      return if group_name.nil?
+      return if metricname.nil?
+
+      metric_name = []
+      metrics = {}
+      metric_gid = []
+      query = {}
+      params = {}
+
+      metric_name = [metricname]
+      metrics["metrics"] = metric_name
+      metric_gid = [metrics]
+      query[group_name] = metric_gid
+      params["queries"] = query
+      params["starttime"] = starttime if !starttime.nil?
+      params["duration"] = duration if !duration.nil?
+      params["sample_size"] = sample_size if !sample_size.nil?
+
+      samples = @util.make_api_get_request("/samples.json", @apikey, params)
       return samples
     end
 
@@ -58,7 +76,9 @@ module CopperEgg
       dashes = @util.make_api_get_request("/dashboards.json", @apikey, nil)
       return nil if dashes.nil?
 
-      dashboards = JSON.parse(dashes.body)
+#      dashboards = JSON.parse(dashes.body)
+# modified 12-10-2012 ... get returns the body
+      dashboards = JSON.parse(dashes)
       dashboards.each do |dash|
         if dash["name"] == dashboard_name
           return dash
