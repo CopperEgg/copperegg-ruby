@@ -7,5 +7,9 @@ module CopperEgg
 		def self.apikey=(apikey)
 			MetricGroup.user = MetricSample.user = CustomDashboard.user = apikey
 		end
+
+		def self.apikey
+			MetricGroup.user
+		end
 	end
 end
