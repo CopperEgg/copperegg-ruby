@@ -15,7 +15,6 @@ To build and install the development branch yourself from the latest source:
 ```
 $ git clone git@github.com:copperegg/copperegg-ruby.git -b develop
 $ cd copperegg-ruby
-$ git checkout develop
 $ gem build copperegg.gemspec
 $ gem install copperegg-{version}.gem
 ```
