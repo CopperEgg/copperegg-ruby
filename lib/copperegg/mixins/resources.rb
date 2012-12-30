@@ -10,7 +10,7 @@ module CopperEgg
 						begin
 							super(*args)
 						rescue ActiveResource::ForbiddenAccess
-							raise "Resource not found."
+							return
 						end
 					end
 

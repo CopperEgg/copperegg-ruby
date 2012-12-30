@@ -29,15 +29,31 @@ module CopperEgg
 				options = args.extract_options!.with_indifferent_access
 
 				return super(args.first) if args.first.is_a?(Hash)
-					
-				metric_group = args.first
 
+				metric_group = args.first
+				dashboard = create_dashboard(metric_group, options)
+				dashboard.save
+				dashboard
+			end
+
+			def create!(*args)
+				options = args.extract_options!.with_indifferent_access
+
+				return super(args.first) if args.first.is_a?(Hash)
+
+				metric_group = args.first
+				dashboard = create_dashboard(metric_group, options)
+				dashboard.save!
+				dashboard
+			end
+
+			def create_dashboard(metric_group, options)
 				raise ArgumentError.new("CopperEgg::MetricGroup object expected") if !metric_group.is_a?(MetricGroup)
 				raise ArgumentError.new("Invalid metric group") if !metric_group.valid?
 
 				name 					= options[:name] || "#{metric_group.label} Dashboard"
-				metrics 			= filter_metrics(metric_group, options[:metric]).map { |name| metric_group.metrics.find {|metric| metric.name == name} }
-				identifiers 	= options[:identifier].is_a?(Array) ? (options[:identifier].empty? ? nil : options[:identifier]) : (options[:identifier] ? [options[:identifier]] : nil)
+				metrics 			= filter_metrics(metric_group, options[:metrics]).map { |name| metric_group.metrics.find {|metric| metric.name == name} }
+				identifiers 	= options[:identifiers].is_a?(Array) ? (options[:identifiers].empty? ? nil : options[:identifiers]) : (options[:identifier] ? [options[:identifiers]] : nil)
 				widget_match 	= identifiers.nil? ? "all" : (identifiers.size == 1 ? "select" : "multi")
 				widget_type 	= widget_match == "select" ? "metric" : "timeline"
 				widget_style 	= widget_type == "metric" ? "both" : "values"
@@ -48,7 +64,6 @@ module CopperEgg
 					widget.match_param = identifiers if identifiers
 					dashboard.data.widgets[i.to_s] = widget
 				end
-				dashboard.save
 				dashboard
 			end
 
@@ -106,6 +121,7 @@ module CopperEgg
 			attr_reader :error
 
 			def initialize(attributes={})
+				attributes.delete(:error)
 				attributes.each {|attr, value| send("#{attr}=", value)}
 				@error = nil
 			end
@@ -145,7 +161,7 @@ module CopperEgg
 				if @error.nil?
 					valid = true
 					self.match_params = [self.match_param] if self.match != "all" && !self.match_param.is_a?(Array)
-					remove_instance_variable(:@error) if @error
+					remove_instance_variable(:@error) if instance_variable_get(:@error)
 				end
 				
 				valid

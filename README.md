@@ -78,7 +78,7 @@ The raw JSON response is returned as specified in the [API docs][sample_docs].
 
 ### Create a dashboard from a metric group
 
-By default, the dashboard created will be named "_metric group label_ Dashboard" and will have one timeline widget per metric matching all sources.
+By default, the dashboard created will be named _<metric group label> Dashboard_ and will have one timeline widget per metric matching all sources.
 
 ```ruby
 # Creates a dashboard named "My Metric Group Dashboard"
@@ -94,20 +94,22 @@ You can pass an option to specify the name of the dashboard.
 If a single identifier is specified, the dashboard will be created having one value widget per metric matching the single identifier.
 
 ```ruby
- CopperEgg::CustomDashboard.create(metric_group, :name => "Cloud Servers", :identifier => "custom_identifier1")
+ CopperEgg::CustomDashboard.create(metric_group, :name => "Cloud Servers", :identifiers => "custom_identifier1")
 ```
 
 If an array of identifiers is specified, the dashboard will be created having one timeline widget per metric matching each identifier.
 
 ```ruby
- CopperEgg::CustomDashboard.create(metric_group, :name => "Cloud Servers", :identifier => ["custom_identifier1", "custom_identifier2"])
+ CopperEgg::CustomDashboard.create(metric_group, :name => "Cloud Servers", :identifiers => ["custom_identifier1", "custom_identifier2"])
 ```
 
 You can limit the widgets created by metic.
 
 ```ruby
- CopperEgg::CustomDashboard.create(metric_group, :name => "Cloud Servers", :identifier => ["custom_identifier1", "custom_identifier2"], :metric => ["reading", "writing", "waiting"])
+ CopperEgg::CustomDashboard.create(metric_group, :name => "Cloud Servers", :identifiers => ["custom_identifier1", "custom_identifier2"], :metrics => ["reading", "writing", "waiting"])
 ```
+
+Calling _create!_ raises an error if the dashboard cannot be saved.
 
 ### Get a dashboard
 
