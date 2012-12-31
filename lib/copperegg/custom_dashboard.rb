@@ -31,23 +31,6 @@ module CopperEgg
 				return super(args.first) if args.first.is_a?(Hash)
 
 				metric_group = args.first
-				dashboard = create_dashboard(metric_group, options)
-				dashboard.save
-				dashboard
-			end
-
-			def create!(*args)
-				options = args.extract_options!.with_indifferent_access
-
-				return super(args.first) if args.first.is_a?(Hash)
-
-				metric_group = args.first
-				dashboard = create_dashboard(metric_group, options)
-				dashboard.save!
-				dashboard
-			end
-
-			def create_dashboard(metric_group, options)
 				raise ArgumentError.new("CopperEgg::MetricGroup object expected") if !metric_group.is_a?(MetricGroup)
 				raise ArgumentError.new("Invalid metric group") if !metric_group.valid?
 
@@ -64,6 +47,7 @@ module CopperEgg
 					widget.match_param = identifiers if identifiers
 					dashboard.data.widgets[i.to_s] = widget
 				end
+				dashboard.save
 				dashboard
 			end
 
@@ -110,6 +94,10 @@ module CopperEgg
 	  	def set_order
 	  		@order = @widgets.keys
 	  	end
+
+	  	def to_json(options={})
+		  	as_json(options.merge(:root => false)).to_json
+		  end
 	  end
 
 		class Widget
@@ -166,6 +154,10 @@ module CopperEgg
 				
 				valid
 			end
+
+			def to_json(options={})
+		  	as_json(options.merge(:root => false)).to_json
+		  end
 		end
 	end
 end

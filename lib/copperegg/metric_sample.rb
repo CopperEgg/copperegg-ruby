@@ -27,8 +27,8 @@ module CopperEgg
   	end
 
     class Values
-      def as_json(options={})
-        super(options.merge(:root => false))
+      def to_json(options={})
+        as_json(options.merge(:root => false)).to_json
       end
     end
   end
