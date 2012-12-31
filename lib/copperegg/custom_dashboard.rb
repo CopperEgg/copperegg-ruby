@@ -43,7 +43,9 @@ module CopperEgg
 
 				dashboard = new(:name => name)
 				metrics.each.with_index do |metric, i|
-					widget = Widget.new(:type => widget_type, :style => widget_style, :match => widget_match, :metric => {metric_group.name => [[metric.position, metric.name]]})
+					metric_data = [metric.position, metric.name]
+					metric_data.push("rate") if metric.type == "ce_counter" || metric.type == "ce_counter_f"
+					widget = Widget.new(:type => widget_type, :style => widget_style, :match => widget_match, :metric => {metric_group.name => [metric_data]})
 					widget.match_param = identifiers if identifiers
 					dashboard.data.widgets[i.to_s] = widget
 				end
