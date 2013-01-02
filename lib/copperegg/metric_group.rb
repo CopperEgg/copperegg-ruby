@@ -30,7 +30,7 @@ module CopperEgg
 		  			@error = metric.error
 		  			break
 		  		else
-		  			metric.send(:remove_instance_variable, :@position) if metric.instance_variable_get(:@position) && !self.persisted?
+		  			metric.send(:remove_instance_variable, :@position) if metric.instance_variables.include?(:@position) && !self.persisted?
 		  		end
 		  	end
 		  end

@@ -64,7 +64,7 @@ module CopperEgg
 			end
 
 			def find_by_name(name)
-				find.select {|dashboard| dashboard.name == name}
+				find.detect {|dashboard| dashboard.name == name}
 			end
 
 			private
