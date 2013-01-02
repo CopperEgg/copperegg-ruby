@@ -36,7 +36,7 @@ module CopperEgg
 
 		class <<self
 			def create(*args)
-				options = args.extract_options!.with_indifferent_access
+				options = args.last.class == Hash ? args.pop : {}
 
 				return super(args.first) if args.first.is_a?(Hash)
 
@@ -120,23 +120,23 @@ module CopperEgg
 				elsif !MATCHES.include?(self.match)
 					@error = "Invalid widget match #{self.match}."
 				elsif !self.metric.is_a?(Hash) || self.metric.keys.size == 0
-					@error = "Invalid widget metric."
+					@error = "Invalid widget metric. #{self.metric}"
 				elsif self.match != "all" && (self.match_param.nil? || self.match_param.to_s.strip.empty?)
 					@error = "Missing match parameter."
 				else
 					self.metric.each do |metric_group_name, value|
 						if !value.is_a?(Array)
-							@error = "Invalid widget metric."
+							@error = "Invalid widget metric. #{self.metric}"
 						elsif value.length == 0
-							@error = "Invalid widget metric."
+							@error = "Invalid widget metric. #{self.metric}"
 						else
 							value.each do |metric_data|
 								if !metric_data.is_a?(Array)
-									@error = "Invalid widget metric."
+									@error = "Invalid widget metric. #{self.metric}"
 								elsif metric_data.length < 2
-									@error = "Invalid widget metric."
+									@error = "Invalid widget metric. #{self.metric}"
 								elsif (/^\d+$/ =~ metric_data.first.to_s).nil?
-									@error = "Invalid widget metric."
+									@error = "Invalid widget metric. #{self.metric}"
 								end
 							end
 						end

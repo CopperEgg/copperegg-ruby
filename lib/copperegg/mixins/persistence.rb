@@ -29,12 +29,6 @@ module CopperEgg
 							request(:id => id, :request_type => "delete")
 						end
 
-						private
-
-						def resource(value)
-							@resource_name = value
-						end
-
 						def request(params={})
 							request_type = params.delete(:request_type)
 							raise "invalid type" if !%w(get post put delete).include?(request_type)
@@ -69,6 +63,12 @@ module CopperEgg
 
 				      JSON.parse(response.body)
 						end
+
+						private
+
+						def resource(value)
+							@resource_name = value
+						end
 					end
 				end
 			end
@@ -77,7 +77,7 @@ module CopperEgg
 
 			def save
 				if valid?
-					attributes = persisted? ? create : update
+					attributes = persisted? ? update : create
 					parse_attributes(attributes)
 				else
 					raise ValidationError.new(@error)
@@ -88,6 +88,10 @@ module CopperEgg
 				self.class.request(:id => @id, :request_type => "delete").nil?
 			end
 
+			def persisted?
+				!@id.nil?
+			end
+
 			private
 
 			def create
@@ -96,10 +100,6 @@ module CopperEgg
 
 			def update
 				self.class.request(to_hash.merge(:id => @id, :request_type => "put"))
-			end
-
-			def persisted?
-				@id.nil?
 			end
 		end
 	end
