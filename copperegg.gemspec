@@ -17,7 +17,7 @@ Gem::Specification.new do |s|
   s.test_files    = Dir.glob("{test,spec,features}/*")
   s.executables   = Dir.glob("bin/*")
 
-  s.add_dependency('activeresource', '~> 3.2.9')
+  s.add_dependency('json_pure', '~> 1.7.6')
 
   s.rdoc_options = ['--line-numbers', '--inline-source', '--title', 'copperegg-ruby', '--main', 'README.md']
 end

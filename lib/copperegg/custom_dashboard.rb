@@ -1,28 +1,38 @@
 module CopperEgg
-	class CustomDashboard < ActiveResource::Base
-		include ActiveModel::Validations
-		include CopperEgg::Mixins::Resources
-		extend ActiveModel::Callbacks
+	class CustomDashboard
+		include CopperEgg::Mixins::Persistence
+		include CopperEgg::Mixins::Attributes
+	
+		resource "dashboards"
 
-		self.element_name = "dashboard"
+		attr_accessor :name, :label, :data
 
-		validates_each :data do |record, attr, data|
-			data.widgets.values.each do |widget|
-				widget = Widget.new(widget) if widget.is_a?(Hash)
-				if !widget.is_a?(Widget)
-	  			record.errors.add(attr, "widget expected.")
-	  		elsif !widget.valid?
-	  			record.errors.add(attr, widget.error)
-	  		end
+		alias_method :orig_parse_attributes, :parse_attributes
+
+		def parse_attributes(attributes)
+			orig_parse_attributes(attributes)
+			@data ||= Data.new
+		end
+
+		def valid?
+			@error = nil
+			if self.name.nil? || self.name.to_s.strip.empty?
+				@error = "Name can't be blank."
+			else
+				self.data.widgets = self.data.widgets.reduce({}) {|memo, value| memo[value.first] = value.last.is_a?(Hash) ? Widget.new(value.last) : value.last; memo}
+				self.data.widgets.values.each do |widget|
+					widget = Widget.new(widget) if widget.is_a?(Hash)
+					if !widget.is_a?(Widget)
+		  			@error = "Widget expected."
+		  			break
+		  		elsif !widget.valid?
+		  			@error = widget.error
+		  			break
+		  		end
+				end
 			end
+			@error.nil?
 		end
-
-		validates_each :name do |record, attr, value|
-			record.errors.add(attr, "can't be blank") if value.blank?
-		end
-
-		define_model_callbacks :save, :only => [:before]
-		before_save :set_data_order
 
 		class <<self
 			def create(*args)
@@ -54,7 +64,7 @@ module CopperEgg
 			end
 
 			def find_by_name(name)
-				all.find {|dashboard| dashboard.name == name}
+				find.select {|dashboard| dashboard.name == name}
 			end
 
 			private
@@ -66,43 +76,33 @@ module CopperEgg
 			end
 		end
 
-		def initialize(*args)
-	  	super(*args)
-	  	@attributes["name"] = nil if !@attributes["name"]
-	  	@attributes["data"] = Data.new if !@attributes["data"]
-	  end
-
-	  def save
-		  run_callbacks(:save) { super }
-		end
-
-		protected
-
-		def set_data_order
-			data.set_order
-		end
-
 	  class Data
+	  	include CopperEgg::Mixins::Attributes
+
 	  	attr_accessor :widgets
-	  	attr_reader :order
+	  	attr_reader :order, :error
 
 	  	def initialize(attributes={})
-	  		attributes = attributes.with_indifferent_access
-	  		@widgets = attributes[:widgets] || {}
+	  		@widgets = attributes[:widgets] || attributes["widgets"] || {}
 	  		@widgets.each { |index, hash| @widgets[index] = Widget.new(hash) }
 	  		@order = attributes[:order] || []
 	  	end
 
 	  	def set_order
-	  		@order = @widgets.keys
+	  		@order = @widgets.keys if @order.empty?
 	  	end
 
-	  	def to_json(options={})
-		  	as_json(options.merge(:root => false)).to_json
-		  end
+	  	alias_method :orig_to_hash, :to_hash
+
+	  	def to_hash
+	  		set_order
+	  		orig_to_hash
+	  	end
 	  end
 
 		class Widget
+			include CopperEgg::Mixins::Attributes
+
 			TYPES = %w(metric metric_list timeline)
 			STYLES = %w(value timeline both list values)
 			MATCHES = %w(select multi tag all)
@@ -110,14 +110,9 @@ module CopperEgg
 			attr_accessor :type, :style, :match, :match_param, :metric, :label
 			attr_reader :error
 
-			def initialize(attributes={})
-				attributes.delete(:error)
-				attributes.each {|attr, value| send("#{attr}=", value)}
-				@error = nil
-			end
-
 			def valid?
 				valid = false
+				@error = nil
 				if !TYPES.include?(self.type)
 					@error = "Invalid widget type #{self.type}."
 				elsif !STYLES.include?(self.style)
@@ -126,7 +121,7 @@ module CopperEgg
 					@error = "Invalid widget match #{self.match}."
 				elsif !self.metric.is_a?(Hash) || self.metric.keys.size == 0
 					@error = "Invalid widget metric."
-				elsif self.match != "all" && self.match_param.blank?
+				elsif self.match != "all" && (self.match_param.nil? || self.match_param.to_s.strip.empty?)
 					@error = "Missing match parameter."
 				else
 					self.metric.each do |metric_group_name, value|
@@ -151,15 +146,11 @@ module CopperEgg
 				if @error.nil?
 					valid = true
 					self.match_params = [self.match_param] if self.match != "all" && !self.match_param.is_a?(Array)
-					remove_instance_variable(:@error) if instance_variable_get(:@error)
+					remove_instance_variable(:@error)
 				end
 				
 				valid
 			end
-
-			def to_json(options={})
-		  	as_json(options.merge(:root => false)).to_json
-		  end
 		end
 	end
 end

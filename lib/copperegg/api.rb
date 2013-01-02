@@ -1,15 +1,26 @@
 module CopperEgg
 	class Api
-		def self.host=(host)
-			MetricGroup.site = MetricSample.site = CustomDashboard.site = "#{host}/v2/revealmetrics"
-		end
+		class << self
+			attr_accessor :apikey
+			attr_reader :ssl_verify_peer, :timeout
 
-		def self.apikey=(apikey)
-			MetricGroup.user = MetricSample.user = CustomDashboard.user = apikey
-		end
+			@uri = "https://api.copperegg.com/v2/revealmetrics/"
 
-		def self.apikey
-			MetricGroup.user
+			def host=(host)
+				@uri = "#{host}/v2/revealmetrics/"
+			end
+
+			def uri
+				@uri
+			end
+
+			def ssl_verify_peer=(boolean)
+				@ssl_verify_peer = boolean ? true : false
+			end
+
+			def timeout=(seconds)
+				@timeout = seconds.to_i
+			end
 		end
 	end
 end
