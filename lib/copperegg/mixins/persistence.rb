@@ -40,9 +40,8 @@ module CopperEgg
 							raise "invalid type" if !%w(get post put delete).include?(request_type)
 							id = params.delete(:id)
 
-							uri_parts = [Api.uri, "#{self.resource_name}/"]
-							uri_parts.push(id) if id
-							uri = URI.parse "#{URI.join(*uri_parts)}.json"
+							uri = id ? URI.parse("#{Api.uri}/#{self.resource_name}/#{id}.json") : URI.parse("#{Api.uri}/#{self.resource_name}.json")
+
 							http = Net::HTTP.new(uri.host, uri.port)
 							http.use_ssl = uri.scheme == 'https'
 				      http.verify_mode = OpenSSL::SSL::VERIFY_NONE if !Api.ssl_verify_peer
