@@ -140,7 +140,7 @@ If an array of identifiers is specified, the dashboard will be created having on
 dashboard = CopperEgg::CustomDashboard.create(metric_group, :name => "Cloud Servers", :identifiers => ["custom_identifier1", "custom_identifier2"])
 ```
 
-You can limit the widgets created by metic.
+You can limit the widgets created by metric.
 
 ```ruby
 dashboard = CopperEgg::CustomDashboard.create(metric_group, :name => "Cloud Servers", :identifiers => ["custom_identifier1", "custom_identifier2"], :metrics => ["reading", "writing", "waiting"])
