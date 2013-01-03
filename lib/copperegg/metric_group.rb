@@ -1,17 +1,40 @@
 module CopperEgg
 	class MetricGroup
 		include CopperEgg::Mixins::Persistence
-		include CopperEgg::Mixins::Attributes
 		
 		resource "metric_groups"
 
 		attr_accessor :name, :label, :frequency, :metrics
 
-		alias_method :orig_parse_attributes, :parse_attributes
+		def initialize(attributes={})
+			load_attributes(attributes)
+		end
 
-		def parse_attributes(attributes)
-			orig_parse_attributes(attributes)
-			@metrics ||= []
+		def load_attributes(attributes)
+			@metrics = []
+			attributes.each do |name, value|
+				if name.to_s == "id"
+					@id = value
+				elsif !respond_to?("#{name}=")
+					next
+				elsif value.to_s == "metrics"
+					@metrics = value.map {|v| Metric.new(v)}
+				else
+					send "#{name}=", value
+				end
+			end
+		end
+
+		def to_hash
+			self.instance_variables.reduce({}) do |memo, variable|
+				value = instance_variable_get(variable)
+				if variable.to_s == "@metrics"
+					memo[variable.to_s.sub("@","")] = value.map(&:to_hash)
+				elsif variable.to_s != "@error"
+					memo[variable.to_s.sub("@","")] = value
+				end
+				memo
+			end
 		end
 
 	  def valid?
@@ -38,18 +61,31 @@ module CopperEgg
 	  end
 
 	  class Metric
-	  	include CopperEgg::Mixins::Attributes
-
 	  	TYPES = %w(ce_gauge ce_gauge_f ce_counter ce_counter_f)
 
 			attr_accessor :name, :label, :type, :unit
 			attr_reader :error, :position
 
-			alias_method :orig_parse_attributes, :parse_attributes
+			def initialize(attributes={})
+				attributes.each do |name, value|
+					if name.to_s == "position"
+						@position = value
+					elsif !respond_to?("#{name}=")
+						next
+					else
+						send "#{name}=", value
+					end
+				end
+			end
 
-			def parse_attributes(attributes)
-				@position = attributes.delete(:position) || attributes.delete("position")
-				orig_parse_attributes(attributes)
+			def to_hash
+				self.instance_variables.reduce({}) do |memo, variable|
+					if variable.to_s != "@error"
+						value = instance_variable_get(variable)
+						memo[variable.to_s.sub("@","")] = value
+					end
+					memo
+				end
 			end
 
 			def valid?
@@ -60,7 +96,7 @@ module CopperEgg
 				elsif self.type.nil? || self.type.to_s.strip.empty?
 					@error = "Metric type must be defined."
 				elsif !TYPES.include?(self.type)
-					@error = "Invalid metric type #{self.type}."
+					return "Invalid metric type #{self.type}."
 				else
 					valid = true
 					remove_instance_variable(:@error)

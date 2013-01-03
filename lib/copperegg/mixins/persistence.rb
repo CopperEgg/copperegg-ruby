@@ -78,14 +78,14 @@ module CopperEgg
 			def save
 				if valid?
 					attributes = persisted? ? update : create
-					parse_attributes(attributes)
+					load_attributes(attributes)
 				else
 					raise ValidationError.new(@error)
 				end
 			end
 
 			def delete
-				self.class.request(:id => @id, :request_type => "delete").nil?
+				self.class.request(:id => @id, :request_type => "delete")
 			end
 
 			def persisted?

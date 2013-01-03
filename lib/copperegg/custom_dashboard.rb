@@ -1,17 +1,38 @@
 module CopperEgg
 	class CustomDashboard
 		include CopperEgg::Mixins::Persistence
-		include CopperEgg::Mixins::Attributes
+
+		WIDGET_TYPES 		= %w(metric metric_list timeline)
+		WIDGET_STYLES 	= %w(value timeline both list values)
+		WIDGET_MATCHES	= %w(select multi tag all)
 	
 		resource "dashboards"
 
 		attr_accessor :name, :label, :data
 
-		alias_method :orig_parse_attributes, :parse_attributes
+		def initialize(attributes={})
+			load_attributes(attributes)
+		end
 
-		def parse_attributes(attributes)
-			orig_parse_attributes(attributes)
-			@data ||= Data.new
+		def load_attributes(attributes)
+			@data = {"widgets" => {}, "order" => []}
+			attributes.each do |name, value|
+				if name.to_s == "id"
+					@id = value
+				elsif name.to_s == "data"
+					attributes[name].each do |data_name, data_value|
+						if data_name.to_s == "order"
+							data["order"] = data_value
+						else
+							data["widgets"] = data_value
+						end
+					end
+				elsif !respond_to?("#{name}=")
+					next
+				else
+					send "#{name}=", value
+				end
+			end
 		end
 
 		def valid?
@@ -19,19 +40,55 @@ module CopperEgg
 			if self.name.nil? || self.name.to_s.strip.empty?
 				@error = "Name can't be blank."
 			else
-				self.data.widgets = self.data.widgets.reduce({}) {|memo, value| memo[value.first] = value.last.is_a?(Hash) ? Widget.new(value.last) : value.last; memo}
-				self.data.widgets.values.each do |widget|
-					widget = Widget.new(widget) if widget.is_a?(Hash)
-					if !widget.is_a?(Widget)
-		  			@error = "Widget expected."
-		  			break
-		  		elsif !widget.valid?
-		  			@error = widget.error
-		  			break
-		  		end
+				self.data["widgets"].values.each do |widget|
+					widget.each do |key, value|
+						if key.to_s == "type" && !WIDGET_TYPES.include?(value)
+							@error = "Invalid widget type #{value}."
+						elsif key.to_s == "style" && !WIDGET_STYLES.include?(value)
+							@error = "Invalid widget style #{value}."
+						elsif key.to_s == "match" && !WIDGET_MATCHES.include?(value)
+							@error = "Invalid widget match #{value}."
+						elsif key.to_s == "metric" && (!value.is_a?(Hash) || value.keys.size == 0)
+							@error = "Invalid widget metric. #{value}"
+						elsif key.to_s == "match_param" && (widget["match"] || widget[:match]) != "all" && (value.nil? || value.to_s.strip.empty?)
+							@error = "Missing match parameter."
+						else
+							(widget["metric"] || widget[:metric]).each do |metric_group_name, metric_group_value|
+								if !metric_group_value.is_a?(Array)
+									@error = "Invalid widget metric. #{metric_group_value}"
+								elsif metric_group_value.length == 0
+									@error = "Invalid widget metric. #{metric_group_value}"
+								else
+									metric_group_value.each do |metric_data|
+										if !metric_data.is_a?(Array)
+											@error = "Invalid widget metric. #{metric_group_value}"
+										elsif metric_data.length < 2
+											@error = "Invalid widget metric. #{metric_group_value}"
+										elsif (/^\d+$/ =~ metric_data.first.to_s).nil?
+											@error = "Invalid widget metric. #{metric_group_value}"
+										end
+									end
+								end
+							end
+						end
+					end
+					break if !@error.nil?
 				end
 			end
 			@error.nil?
+		end
+
+		def to_hash
+			set_data_order
+			self.instance_variables.reduce({}) do |memo, variable|
+				unless variable.to_s == "@error"
+					value = instance_variable_get(variable)
+					puts variable.inspect
+					puts value.inspect
+					memo[variable.to_s.sub("@","")] = value
+				end
+				memo
+			end
 		end
 
 		class <<self
@@ -44,20 +101,20 @@ module CopperEgg
 				raise ArgumentError.new("CopperEgg::MetricGroup object expected") if !metric_group.is_a?(MetricGroup)
 				raise ArgumentError.new("Invalid metric group") if !metric_group.valid?
 
-				name 					= options[:name] || "#{metric_group.label} Dashboard"
 				metrics 			= filter_metrics(metric_group, options[:metrics]).map { |name| metric_group.metrics.find {|metric| metric.name == name} }
 				identifiers 	= options[:identifiers].is_a?(Array) ? (options[:identifiers].empty? ? nil : options[:identifiers]) : (options[:identifier] ? [options[:identifiers]] : nil)
 				widget_match 	= identifiers.nil? ? "all" : (identifiers.size == 1 ? "select" : "multi")
 				widget_type 	= widget_match == "select" ? "metric" : "timeline"
 				widget_style 	= widget_type == "metric" ? "both" : "values"
+				name 					= options[:name] || "#{metric_group.label} Dashboard"
 
 				dashboard = new(:name => name)
 				metrics.each.with_index do |metric, i|
 					metric_data = [metric.position, metric.name]
 					metric_data.push("rate") if metric.type == "ce_counter" || metric.type == "ce_counter_f"
-					widget = Widget.new(:type => widget_type, :style => widget_style, :match => widget_match, :metric => {metric_group.name => [metric_data]})
-					widget.match_param = identifiers if identifiers
-					dashboard.data.widgets[i.to_s] = widget
+					widget = {:type => widget_type, :style => widget_style, :match => widget_match, :metric => {metric_group.name => [metric_data]}}
+					widget[:match_param] = identifiers if identifiers
+					dashboard.data["widgets"][i.to_s] = widget
 				end
 				dashboard.save
 				dashboard
@@ -76,81 +133,10 @@ module CopperEgg
 			end
 		end
 
-	  class Data
-	  	include CopperEgg::Mixins::Attributes
+		private
 
-	  	attr_accessor :widgets
-	  	attr_reader :order, :error
-
-	  	def initialize(attributes={})
-	  		@widgets = attributes[:widgets] || attributes["widgets"] || {}
-	  		@widgets.each { |index, hash| @widgets[index] = Widget.new(hash) }
-	  		@order = attributes[:order] || []
-	  	end
-
-	  	def set_order
-	  		@order = @widgets.keys if @order.empty?
-	  	end
-
-	  	alias_method :orig_to_hash, :to_hash
-
-	  	def to_hash
-	  		set_order
-	  		orig_to_hash
-	  	end
-	  end
-
-		class Widget
-			include CopperEgg::Mixins::Attributes
-
-			TYPES = %w(metric metric_list timeline)
-			STYLES = %w(value timeline both list values)
-			MATCHES = %w(select multi tag all)
-
-			attr_accessor :type, :style, :match, :match_param, :metric, :label
-			attr_reader :error
-
-			def valid?
-				valid = false
-				@error = nil
-				if !TYPES.include?(self.type)
-					@error = "Invalid widget type #{self.type}."
-				elsif !STYLES.include?(self.style)
-					@error = "Invalid widget style #{self.style}."
-				elsif !MATCHES.include?(self.match)
-					@error = "Invalid widget match #{self.match}."
-				elsif !self.metric.is_a?(Hash) || self.metric.keys.size == 0
-					@error = "Invalid widget metric. #{self.metric}"
-				elsif self.match != "all" && (self.match_param.nil? || self.match_param.to_s.strip.empty?)
-					@error = "Missing match parameter."
-				else
-					self.metric.each do |metric_group_name, value|
-						if !value.is_a?(Array)
-							@error = "Invalid widget metric. #{self.metric}"
-						elsif value.length == 0
-							@error = "Invalid widget metric. #{self.metric}"
-						else
-							value.each do |metric_data|
-								if !metric_data.is_a?(Array)
-									@error = "Invalid widget metric. #{self.metric}"
-								elsif metric_data.length < 2
-									@error = "Invalid widget metric. #{self.metric}"
-								elsif (/^\d+$/ =~ metric_data.first.to_s).nil?
-									@error = "Invalid widget metric. #{self.metric}"
-								end
-							end
-						end
-					end
-				end
-
-				if @error.nil?
-					valid = true
-					self.match_params = [self.match_param] if self.match != "all" && !self.match_param.is_a?(Array)
-					remove_instance_variable(:@error)
-				end
-				
-				valid
-			end
-		end
+		def set_data_order
+  		@data["order"] = @data["widgets"].keys if @data["order"].empty?
+  	end
 	end
 end
