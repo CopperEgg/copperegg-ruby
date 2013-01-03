@@ -1,4 +1,3 @@
-source "http://rubygems.org"
+source "https://rubygems.org"
 
-# gems dependencies should be in copperegg.gemspec
 gemspec

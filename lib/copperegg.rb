@@ -1,17 +1,12 @@
-require 'copperegg/metrics'
-require 'copperegg/util'
-require 'net/http'
-require 'net/https'
-require 'uri'
-
-  API_VERSION = 'v2'
-  DEFAULTS = {
-      :apihost => 'https://api.copperegg.com',
-      :ssl_verify_peer => false,
-      #:ssl_ca_file => File.dirname(__FILE__) + '/../../../conf/cacert.pem',
-      :timeout => 10
-    }
+require "net/http"
+require "net/https"
+require "uri"
+require "json/pure"
+require File.dirname(__FILE__) + "/copperegg/mixins/persistence"
+require File.dirname(__FILE__) + "/copperegg/metric_group"
+require File.dirname(__FILE__) + "/copperegg/custom_dashboard"
+require File.dirname(__FILE__) + "/copperegg/metric_sample"
+require File.dirname(__FILE__) + "/copperegg/api"
 
 module CopperEgg
-
 end
