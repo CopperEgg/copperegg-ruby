@@ -55,6 +55,43 @@ metric_group.metrics << {"type"=>"ce_gauge",   "name"=>"waiting",               
 metric_group.save
 ```
 
+If a metric group by the same name already exists, a new one will be created with a "versioned" name. For example:
+
+```ruby
+metric_group2 = CopperEgg::MetricGroup.new(:name => "my_new_metric_group", :label => "New Group Version 2", :frequency => 60)
+metric_group2.metrics << {"type"=>"ce_gauge",   "name"=>"active_connections",     "unit"=>"Connections"}
+metric_group2.save
+
+metric_group2.name
+# => "my_metric_group_v2"
+```
+
+### Updating a metric group:
+
+Labels, frequency, and units can be updated and additional metrics can be added. All other changes will be ignored.
+
+```ruby
+metric_group.name = "this_will_be_ignored"
+metric_group.label = "My New Metric Group"
+metric_group.frequency = 5
+metric_group.metrics << {"type"=>"ce_counter_f", "name"=>"new_metric"}
+metric_group.save
+
+metric_group.name
+# => "my_metric_group"
+metric_group.label
+# => "My New Metric Group"
+metric_group.frequency
+# => 5
+```
+
+### Delete a metric group
+
+```ruby
+metric_group.delete
+```
+
+
 ### Post samples for a metric group
 
 ```ruby
@@ -82,37 +119,45 @@ By default, the dashboard created will be named "_MetricGroupLabel_ Dashboard" a
 
 ```ruby
 # Creates a dashboard named "My Metric Group Dashboard"
-CopperEgg::CustomDashboard.create(metric_group)
+dashboard = CopperEgg::CustomDashboard.create(metric_group)
 ```
 
 You can pass an option to specify the name of the dashboard.
 
 ```ruby
- CopperEgg::CustomDashboard.create(metric_group, :name => "Cloud Servers")
+dashboard = CopperEgg::CustomDashboard.create(metric_group, :name => "Cloud Servers")
 ```
 
 If a single identifier is specified, the dashboard will be created having one value widget per metric matching the single identifier.
 
 ```ruby
- CopperEgg::CustomDashboard.create(metric_group, :name => "Cloud Servers", :identifiers => "custom_identifier1")
+dashboard = CopperEgg::CustomDashboard.create(metric_group, :name => "Cloud Servers", :identifiers => "custom_identifier1")
 ```
 
 If an array of identifiers is specified, the dashboard will be created having one timeline widget per metric matching each identifier.
 
 ```ruby
- CopperEgg::CustomDashboard.create(metric_group, :name => "Cloud Servers", :identifiers => ["custom_identifier1", "custom_identifier2"])
+dashboard = CopperEgg::CustomDashboard.create(metric_group, :name => "Cloud Servers", :identifiers => ["custom_identifier1", "custom_identifier2"])
 ```
 
 You can limit the widgets created by metic.
 
 ```ruby
- CopperEgg::CustomDashboard.create(metric_group, :name => "Cloud Servers", :identifiers => ["custom_identifier1", "custom_identifier2"], :metrics => ["reading", "writing", "waiting"])
+dashboard = CopperEgg::CustomDashboard.create(metric_group, :name => "Cloud Servers", :identifiers => ["custom_identifier1", "custom_identifier2"], :metrics => ["reading", "writing", "waiting"])
 ```
 
 ### Get a dashboard
 
 ```ruby
- CopperEgg::CustomDashboard.find_by_name("My Metric Group Dashboard")
+dashboard = CopperEgg::CustomDashboard.find_by_name("My Metric Group Dashboard")
+```
+
+### Delete a dashboard
+
+Dashboards can be deleted like metric groups:
+
+```ruby
+dashboard.delete
 ```
 
 ## Questions / Problems?

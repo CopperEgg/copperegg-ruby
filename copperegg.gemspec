@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.description = 'Library for using the CopperEgg REST API'
   s.summary   = 'Library for using the CopperEgg REST API'
   s.homepage  = 'http://github.com/copperegg/copperegg-ruby'
-  s.license   = '???'
+  s.license   = 'MIT'
 
   s.platform = Gem::Platform::RUBY
   s.require_paths = %w[lib]
