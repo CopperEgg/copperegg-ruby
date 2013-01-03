@@ -83,8 +83,6 @@ module CopperEgg
 			self.instance_variables.reduce({}) do |memo, variable|
 				unless variable.to_s == "@error"
 					value = instance_variable_get(variable)
-					puts variable.inspect
-					puts value.inspect
 					memo[variable.to_s.sub("@","")] = value
 				end
 				memo
