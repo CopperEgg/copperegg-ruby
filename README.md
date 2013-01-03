@@ -7,7 +7,7 @@ The CopperEgg gem allows programmatic access to the CopperEgg API.
 Via rubygems.org:
 
 ```
-$ gem install copperegg-ruby
+$ gem install copperegg
 ```
 
 To build and install the development branch yourself from the latest source:
