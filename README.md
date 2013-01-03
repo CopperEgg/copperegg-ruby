@@ -167,7 +167,7 @@ There are more detailed examples in the [test classes][test_classes].
 Full [API docs][docs] are available.
 
 [sample_docs]:http://dev.copperegg.com/revealmetrics/samples.html
-[test_classes]:https://github.com/copperegg/copperegg-ruby/tree/feature/ares/test
+[test_classes]:https://github.com/copperegg/copperegg-ruby/tree/develop/test
 [docs]:http://dev.copperegg.com
 
 ## Copyright
