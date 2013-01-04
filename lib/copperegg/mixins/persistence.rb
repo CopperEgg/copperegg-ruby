@@ -12,12 +12,13 @@ module CopperEgg
 							params = args.last.class == Hash ? args.pop : {}
 							id = args.first
 							response = request(params.merge(:request_type => "get", :id => id))
-							if response && response.is_a?(Array)
-								response.map do |resp| 
-									new JSON.parse(resp.body)
+							if response.code == "200"
+								json = JSON.parse(response.body)
+								if json.is_a?(Array)
+									json.map {|attributes| new(attributes)}
+								else
+									new(json)
 								end
-							elsif response
-								new JSON.parse(response.body)
 							end
 						end
 
