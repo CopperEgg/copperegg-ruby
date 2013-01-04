@@ -30,33 +30,12 @@ class MetricGroupTest < Test::Unit::TestCase
 		assert_equal "Metric expected.", error.message
 	end
 
-	def test_save_should_fail_for_invalid_metrics
+	def test_save_should_fail_for_invalid_metric
 		metric_group = CopperEgg::MetricGroup.new(:name => "my_metric_group", :metrics => [{:name => "test", :type => "invalid"}])
 
 		error = assert_raise(CopperEgg::ValidationError) { metric_group.save }
 		assert_equal "Invalid metric type invalid.", error.message
 	end
-
-	# def test_save_should_retrieve_versioned_name_of_metric_group
-	# 	CopperEgg::Api.apikey = "testapikey"
-
-	# 	request_headers = {
-	# 	  'Authorization' => "Basic #{Base64.encode64("testapikey:").gsub("\n",'')}",
-	# 	  'Content-Type'  => 'application/json'
-	# 	}
-	# 	response_body = {:id => "test_v2", :name => "test_v2", :label => "Test", :frequency => 5, :metrics => [{:name => "test", :type => "ce_counter", :position => 0}]}
-	  
-	#   ActiveResource::HttpMock.respond_to do |mock|
-	#     mock.post "/v2/revealmetrics/metric_groups.json", request_headers, response_body.to_json, 200
-	#   end
-
-	# 	metric_group = CopperEgg::MetricGroup.new(:name => "test", :frequency => 5, :metrics => [{:name => "test", :type => "ce_counter"}])
-
-	# 	metric_group.save
-
-	# 	assert_equal "test_v2", metric_group.id
-	# 	assert_equal "test_v2", metric_group.name
-	# end
 
 	def test_to_hash
 		metric_group = CopperEgg::MetricGroup.new(:name => "test", :label => "Test Metric", :frequency => 5)

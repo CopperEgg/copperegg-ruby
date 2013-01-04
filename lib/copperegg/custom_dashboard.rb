@@ -10,10 +10,6 @@ module CopperEgg
 
 		attr_accessor :name, :label, :data
 
-		def initialize(attributes={})
-			load_attributes(attributes)
-		end
-
 		def load_attributes(attributes)
 			@data = {"widgets" => {}, "order" => []}
 			attributes.each do |name, value|
@@ -50,8 +46,6 @@ module CopperEgg
 							@error = "Invalid widget match #{value}."
 						elsif key.to_s == "metric" && (!value.is_a?(Hash) || value.keys.size == 0)
 							@error = "Invalid widget metric. #{value}"
-						elsif key.to_s == "match_param" && (widget["match"] || widget[:match]) != "all" && (value.nil? || value.to_s.strip.empty?)
-							@error = "Missing match parameter."
 						else
 							(widget["metric"] || widget[:metric]).each do |metric_group_name, metric_group_value|
 								if !metric_group_value.is_a?(Array)
@@ -71,6 +65,10 @@ module CopperEgg
 								end
 							end
 						end
+					end
+					match_param = widget["match_param"] || widget[:match_param]
+					if (widget["match"] || widget[:match]) != "all" && (match_param.nil? || match_param.to_s.strip.empty?)
+						@error = "Missing match parameter."
 					end
 					break if !@error.nil?
 				end

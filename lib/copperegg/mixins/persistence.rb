@@ -13,9 +13,11 @@ module CopperEgg
 							id = args.first
 							response = request(params.merge(:request_type => "get", :id => id))
 							if response && response.is_a?(Array)
-								response.map {|resp| new(resp)}
+								response.map do |resp| 
+									new JSON.parse(resp.body)
+								end
 							elsif response
-								new(response)
+								new JSON.parse(response.body)
 							end
 						end
 
@@ -45,23 +47,13 @@ module CopperEgg
 				      request.basic_auth(Api.apikey, "U")
 				      request["Content-Type"] = "application/json"
 
-				      connect_try_count = 0
-				      response = nil
 				      begin
 				        response = http.request(request)
 				      rescue Exception => e
-				        connect_try_count += 1
-				        if connect_try_count > 1
-				          log "#{e.inspect}"
-				          raise e
-				        end
-				        sleep 0.5
-				        retry
+				         raise e
 				      end
 
-				      return nil if response.nil? || response.code != "200" || response.body.nil? || response.body.strip.empty?
-
-				      JSON.parse(response.body)
+				      response
 						end
 
 						private
@@ -73,12 +65,21 @@ module CopperEgg
 				end
 			end
 
-			attr_reader :id
+			attr_reader :id, :error
+
+			def initialize(attributes={})
+				load_attributes(attributes)
+			end
 
 			def save
 				if valid?
-					attributes = persisted? ? update : create
-					load_attributes(attributes)
+					response = persisted? ? update : create
+					attributes = JSON.parse(response.body)
+					if response.code != "200"
+						@error = attributes.merge("code" => response.code)
+					else
+						load_attributes(attributes)
+					end
 				else
 					raise ValidationError.new(@error)
 				end

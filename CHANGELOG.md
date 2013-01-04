@@ -15,3 +15,13 @@ Features:
 Bugfixes:
 
 	- Metric group versioning is encorporated and recognized.
+
+## 0.6.0.pre2 (January 3, 2013)
+
+Changes:
+
+  - MetricSample.save returns HTTP response
+
+Bugfixes:
+
+  - Fixed some MetricGroup and CustomDashboard validations

@@ -6,10 +6,6 @@ module CopperEgg
 
 		attr_accessor :name, :label, :frequency, :metrics
 
-		def initialize(attributes={})
-			load_attributes(attributes)
-		end
-
 		def load_attributes(attributes)
 			@metrics = []
 			attributes.each do |name, value|
@@ -96,7 +92,7 @@ module CopperEgg
 				elsif self.type.nil? || self.type.to_s.strip.empty?
 					@error = "Metric type must be defined."
 				elsif !TYPES.include?(self.type)
-					return "Invalid metric type #{self.type}."
+					@error = "Invalid metric type #{self.type}."
 				else
 					valid = true
 					remove_instance_variable(:@error)
