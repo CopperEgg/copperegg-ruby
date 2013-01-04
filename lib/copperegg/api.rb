@@ -4,14 +4,12 @@ module CopperEgg
 			attr_accessor :apikey
 			attr_reader :ssl_verify_peer, :timeout
 
-			@uri = "https://api.copperegg.com/v2/revealmetrics/"
-
 			def host=(host)
-				@uri = "#{host}/v2/revealmetrics/"
+				@uri = URI.join(host, "/v2/revealmetrics/").to_s
 			end
 
 			def uri
-				@uri
+				@uri || "https://api.copperegg.com/v2/revealmetrics/"
 			end
 
 			def ssl_verify_peer=(boolean)
