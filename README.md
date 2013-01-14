@@ -55,7 +55,7 @@ metric_group.metrics << {"type"=>"ce_gauge",   "name"=>"waiting",               
 metric_group.save
 ```
 
-If a metric group by the same name already exists, that one will rather than creating a new one. For example:
+If a metric group by the same name already exists, that one will rather than creating a new one. In addition, if the metric group was previously removed it will be restored.
 
 ```ruby
 metric_group2 = CopperEgg::MetricGroup.new(:name => "my_new_metric_group", :label => "New Group Version 2", :frequency => 60)

@@ -66,7 +66,7 @@ module CopperEgg
 				@id = self.name
 				needs_update = self.label != metric_group.label || self.frequency != metric_group.frequency || self.metrics.length != metric_group.metrics.length || self.metrics.map(&:name).sort != metric_group.metrics.map(&:name).sort
 				if needs_update
-					self.class.request(self.to_hash.merge(:id => @id, :request_type => "put"))
+					self.class.request(self.to_hash.merge(:id => @id, :request_type => "put", :show_hidden => true))
 				else
 					response
 				end
