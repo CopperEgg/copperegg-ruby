@@ -1,4 +1,4 @@
-## 0.6.0.pre (January 3, 2013)
+## 0.6.0 (January 3, 2013)
 
 Changes:
 
@@ -15,3 +15,9 @@ Features:
 Bugfixes:
 
 	- Metric group versioning is encorporated and recognized.
+
+## 0.6.1 (January 14, 2013)
+
+Changes:
+
+  - Existing metric groups are used rather than automatically versioning metric group name upon creation.

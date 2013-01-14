@@ -56,6 +56,25 @@ module CopperEgg
 		  @error.nil?
 	  end
 
+	  private
+
+		def create
+			response = self.class.request(:request_type => "get", :id => self.name, :show_hidden => true)
+			if response.code == "200"
+				json = JSON.parse(response.body)
+				metric_group = self.class.new(json)
+				@id = self.name
+				needs_update = self.label != metric_group.label || self.frequency != metric_group.frequency || self.metrics.length != metric_group.metrics.length || self.metrics.map(&:name).sort != metric_group.metrics.map(&:name).sort
+				if needs_update
+					self.class.request(self.to_hash.merge(:id => @id, :request_type => "put"))
+				else
+					response
+				end
+			else
+				self.class.request(self.to_hash.merge(:request_type => "post"))
+			end
+		end
+
 	  class Metric
 	  	TYPES = %w(ce_gauge ce_gauge_f ce_counter ce_counter_f)
 
