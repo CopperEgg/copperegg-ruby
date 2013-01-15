@@ -64,9 +64,9 @@ module CopperEgg
 				json = JSON.parse(response.body)
 				metric_group = self.class.new(json)
 				@id = self.name
-				needs_update = self.label != metric_group.label || self.frequency != metric_group.frequency || self.metrics.length != metric_group.metrics.length || self.metrics.map(&:name).sort != metric_group.metrics.map {|m| m["name"]}.sort
-				if needs_update
-					self.class.request(self.to_hash.merge(:id => @id, :request_type => "put", :show_hidden => true))
+				# needs_update = self.label != metric_group.label || self.frequency != metric_group.frequency || self.metrics.length != metric_group.metrics.length || self.metrics.map(&:name).sort != metric_group.metrics.map {|m| m["name"]}.sort
+				if true #needs_update
+					self.class.request(self.to_hash.merge(:id => @id, :is_hidden => false, :request_type => "put", :show_hidden => true))
 				else
 					response
 				end
