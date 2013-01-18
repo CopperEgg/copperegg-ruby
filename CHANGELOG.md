@@ -1,4 +1,4 @@
-## 0.6.1 (January 14, 2013)
+## 0.6.1 (January 17, 2013)
 
 Changes:
 
