@@ -44,7 +44,7 @@ CheckExitCode
 
 echo '--- Update version file --------------------'
 # update version file and commit
-sed 's/\(.*VERSION = "\)\([0-9][0-9.-]*\)\(.pre1\)\("\)/\1\2\4/' < lib/copperegg/ver.rb > lib/copperegg/ver.rb.new
+sed 's/\(.*VERSION = "\)\([0-9][0-9.-]*\)\(.pre[0-9]*\)\("\)/\1\2\4/' < lib/copperegg/ver.rb > lib/copperegg/ver.rb.new
 rm lib/copperegg/ver.rb
 mv lib/copperegg/ver.rb.new lib/copperegg/ver.rb
 git commit -m "Deploying version ${CURRENT_VERSION}" lib/copperegg/ver.rb
@@ -56,8 +56,8 @@ git flow release finish -m "${CURRENT_VERSION}" $CURRENT_VERSION
 CheckExitCode
 git pull origin develop
 CheckExitCode
-#git push
-#CheckExitCode
+git push
+CheckExitCode
 
 echo '--- Bump dev version -----------------------'
 # bump version on develop branch
@@ -68,8 +68,8 @@ rm lib/copperegg/ver.rb
 mv lib/copperegg/ver.rb.new lib/copperegg/ver.rb
 git commit -m "Bumped development version to ${NEXT_VERSION}.pre" lib/copperegg/ver.rb
 CheckExitCode
-#git push
-#CheckExitCode
+git push
+CheckExitCode
 
 echo
 echo
