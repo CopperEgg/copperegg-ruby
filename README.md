@@ -55,20 +55,20 @@ metric_group.metrics << {"type"=>"ce_gauge",   "name"=>"waiting",               
 metric_group.save
 ```
 
-If a metric group by the same name already exists, a new one will be created with a "versioned" name. For example:
+If a metric group by the same name already exists, that one will rather than creating a new one. In addition, if the metric group was previously removed it will be restored.
 
 ```ruby
 metric_group2 = CopperEgg::MetricGroup.new(:name => "my_new_metric_group", :label => "New Group Version 2", :frequency => 60)
-metric_group2.metrics << {"type"=>"ce_gauge",   "name"=>"active_connections",     "unit"=>"Connections"}
-metric_group2.save
+metric_group2.metrics << {"type"=>"ce_counter", "name"=>"active_connections", "unit"=>"Connections"}
+metric_group2.save # this will perform an update to change the type of the metric 'active_connections' from 'ce_gauge' to 'ce_counter'
 
 metric_group2.name
-# => "my_metric_group_v2"
+# => "my_metric_group"
 ```
 
 ### Updating a metric group:
 
-Labels, frequency, and units can be updated and additional metrics can be added. All other changes will be ignored.
+Labels, frequency, metric types and metric units can be updated and additional metrics can be added. Changes to the metric group name or names of metrics within will be ignored.
 
 ```ruby
 metric_group.name = "this_will_be_ignored"
