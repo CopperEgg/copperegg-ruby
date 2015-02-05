@@ -1,6 +1,8 @@
 module CopperEgg
 	class ValidationError < Exception; end
 
+	class HttpError < Exception; end
+
 	module Mixins
 		module Persistence
 			def self.included(klass)
@@ -34,7 +36,7 @@ module CopperEgg
 
 						def request(params={})
 							request_type = params.delete(:request_type)
-							raise "invalid type" if !%w(get post put delete).include?(request_type)
+							raise "invalid type `#{request_type}`" if !%w(get post put delete).include?(request_type)
 							id = params.delete(:id)
 
 							uri = id ? URI.parse("#{Api.uri}/#{self.resource_name}/#{id}.json") : URI.parse("#{Api.uri}/#{self.resource_name}.json")
@@ -55,6 +57,14 @@ module CopperEgg
 				      end
 
 				      response
+						end
+
+						def request_200(params={})
+							response = request(params)
+							unless response.code === "200"
+								raise HttpError.new("HTTP request failed with code `#{response.code}`: `#{response.body}`")
+							end
+							response
 						end
 
 						private
