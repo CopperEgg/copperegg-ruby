@@ -165,6 +165,38 @@ Dashboards can be deleted like metric groups:
 dashboard.delete
 ```
 
+## Tags
+
+#### Getting all or specific tags
+
+```ruby
+tags_list = CopperEgg::Tag.find
+tag = CopperEgg::Tag.find_by_name("my-tag")
+```
+
+#### Create a tag
+
+```
+tag = CopperEgg::Tag.new({:name => "my-tag"})
+tag.objects = ["object-identifier-1", "object-identifier-2"]
+tag.save
+```
+
+#### Update a tag
+
+```
+tag.objects = ["object-identifier-1", "object-identifier-2", "object-identifier-3"]
+tag.save
+```
+
+#### Delete a tag
+
+```
+tag.delete
+```
+
+
+
 ## Questions / Problems?
 
 There are more detailed examples in the [test classes][test_classes].
