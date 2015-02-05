@@ -21,7 +21,7 @@ $ gem install copperegg-{version}.gem
 
 ## Getting Started
 
-### Setup
+#### Setup
 
 ``` ruby
 require 'rubygems' # not necessary with ruby 1.9 but included for completeness
@@ -29,7 +29,9 @@ require 'copperegg'
 CopperEgg::Api.apikey = "sdf87xxxxxxxxxxxxxxxxxxxxx" # from the web UI
 ```
 
-### Get a metric group:
+## Metric Groups:
+
+#### Get a metric group:
 
 ``` ruby
 metric_group = CopperEgg::MetricGroup.find("my_metric_group")
@@ -41,7 +43,7 @@ metric_group.metrics
 # => [#<CopperEgg::MetricGroup::Metric:0x007fb43aab2570 @position=0, @type="ce_gauge", @name="metric1", @label="Metric 1", @unit="b">]
 ```
 
-### Create a metric group:
+#### Create a metric group:
 
 ``` ruby
 metric_group = CopperEgg::MetricGroup.new(:name => "my_new_metric_group", :label => "Cool New Group Visible Name", :frequency => 60) # data is sent every 60 seconds
@@ -66,7 +68,7 @@ metric_group2.name
 # => "my_metric_group"
 ```
 
-### Updating a metric group:
+#### Updating a metric group:
 
 Labels, frequency, metric types and metric units can be updated and additional metrics can be added. Changes to the metric group name or names of metrics within will be ignored.
 
@@ -85,20 +87,21 @@ metric_group.frequency
 # => 5
 ```
 
-### Delete a metric group
+#### Delete a metric group
 
 ```ruby
 metric_group.delete
 ```
 
+## Samples
 
-### Post samples for a metric group
+#### Post samples for a metric group
 
 ```ruby
 CopperEgg::MetricSample.save(metric_group.name, "custom_identifier1", Time.now.to_i, "active_connections" => 2601, "connections_accepts" => 154, "connections_handled" => 128, "connections_requested" => 1342, ...)
 ```
 
-### Get samples
+#### Get samples
 
 ```ruby
 # Get the most recent samples for a single metric
@@ -113,7 +116,9 @@ CopperEgg::MetricSample.samples(metric_group.name, ["connections_accepts", "conn
 
 The raw JSON response is returned as specified in the [API docs][sample_docs].
 
-### Create a dashboard from a metric group
+## Dashboards
+
+#### Create a dashboard from a metric group
 
 By default, the dashboard created will be named "_MetricGroupLabel_ Dashboard" and will have one timeline widget per metric matching all sources.
 
@@ -146,13 +151,13 @@ You can limit the widgets created by metric.
 dashboard = CopperEgg::CustomDashboard.create(metric_group, :name => "Cloud Servers", :identifiers => ["custom_identifier1", "custom_identifier2"], :metrics => ["reading", "writing", "waiting"])
 ```
 
-### Get a dashboard
+#### Get a dashboard
 
 ```ruby
 dashboard = CopperEgg::CustomDashboard.find_by_name("My Metric Group Dashboard")
 ```
 
-### Delete a dashboard
+#### Delete a dashboard
 
 Dashboards can be deleted like metric groups:
 
