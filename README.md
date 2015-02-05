@@ -176,7 +176,7 @@ tag = CopperEgg::Tag.find_by_name("my-tag")
 
 #### Create a tag
 
-```
+```ruby
 tag = CopperEgg::Tag.new({:name => "my-tag"})
 tag.objects = ["object-identifier-1", "object-identifier-2"]
 tag.save
@@ -184,14 +184,14 @@ tag.save
 
 #### Update a tag
 
-```
+```ruby
 tag.objects = ["object-identifier-1", "object-identifier-2", "object-identifier-3"]
 tag.save
 ```
 
 #### Delete a tag
 
-```
+```ruby
 tag.delete
 ```
 
