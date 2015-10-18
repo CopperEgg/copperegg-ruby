@@ -6,8 +6,8 @@ Gem::Specification.new do |s|
   s.author  = 'Eric Anderson'
   s.email   = 'anderson@copperegg.com'
 
-  s.description = 'Library for using the CopperEgg REST API'
-  s.summary   = 'Library for using the CopperEgg REST API'
+  s.description = 'Library for using the Uptime Cloud Monitor REST API'
+  s.summary   = 'Library for using the Uptime Cloud Monitor REST API'
   s.homepage  = 'http://github.com/copperegg/copperegg-ruby'
   s.license   = 'MIT'
 

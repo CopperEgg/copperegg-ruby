@@ -1,6 +1,6 @@
 # CopperEgg Gem
 
-The CopperEgg gem allows programmatic access to the CopperEgg API.
+The CopperEgg gem allows programmatic access to the Uptime Cloud Monitor API.
 
 ## Install
 
@@ -171,4 +171,4 @@ Full [API docs][docs] are available.
 [docs]:http://dev.copperegg.com
 
 ## Copyright
-Copyright 2013 CopperEgg.
+Copyright 2013 IDERA.
