@@ -32,7 +32,7 @@ Changes:
 
 Bugfixes:
 
-  - format to match changes in CopperEgg API
+  - format to match changes in Uptime Cloud Monitor API
 
 
 ## 0.5.2 (Dec 3, 2012)
