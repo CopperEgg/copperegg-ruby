@@ -1,3 +1,7 @@
+## 0.6.2 (February 10, 2017)
+
+  - Added service parameter to copperegg metric group API. Used for creating custom alerts according to the service being monitored (if service is installed from UI)
+
 ## 0.6.1 (January 17, 2013)
 
 Changes:

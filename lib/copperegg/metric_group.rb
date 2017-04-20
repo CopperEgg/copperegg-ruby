@@ -1,10 +1,10 @@
 module CopperEgg
 	class MetricGroup
 		include CopperEgg::Mixins::Persistence
-		
+
 		resource "metric_groups"
 
-		attr_accessor :name, :label, :frequency, :metrics
+		attr_accessor :name, :label, :frequency, :metrics, :service
 
 		def load_attributes(attributes)
 			@metrics = []
