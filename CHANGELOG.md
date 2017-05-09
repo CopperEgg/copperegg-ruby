@@ -1,3 +1,8 @@
+## 0.6.3 (May 10, 2017)
+
+  - Added a parameter to detect dashboards created by database scripts to list them under databases tab on UI
+
+
 ## 0.6.2 (February 10, 2017)
 
   - Added service parameter to copperegg metric group API. Used for creating custom alerts according to the service being monitored (if service is installed from UI)

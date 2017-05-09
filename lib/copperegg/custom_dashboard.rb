@@ -5,10 +5,10 @@ module CopperEgg
 		WIDGET_TYPES 		= %w(metric metric_list timeline)
 		WIDGET_STYLES 	= %w(value timeline both list values)
 		WIDGET_MATCHES	= %w(select multi tag all)
-	
+
 		resource "dashboards"
 
-		attr_accessor :name, :label, :data
+		attr_accessor :name, :label, :data, :is_database
 
 		def load_attributes(attributes)
 			@data = {"widgets" => {}, "order" => []}
@@ -104,7 +104,7 @@ module CopperEgg
 				widget_style 	= widget_type == "metric" ? "both" : "values"
 				name 					= options[:name] || "#{metric_group.label} Dashboard"
 
-				dashboard = new(:name => name)
+				dashboard = new(name: name, is_database: (options[:is_database] || false))
 				metrics.each.with_index do |metric, i|
 					metric_data = [metric.position, metric.name]
 					metric_data.push("rate") if metric.type == "ce_counter" || metric.type == "ce_counter_f"
