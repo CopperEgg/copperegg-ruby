@@ -8,7 +8,7 @@ module CopperEgg
 
 		resource "dashboards"
 
-		attr_accessor :name, :label, :data, :is_database
+		attr_accessor :name, :label, :data, :is_database, :service
 
 		def load_attributes(attributes)
 			@data = {"widgets" => {}, "order" => []}
@@ -104,7 +104,7 @@ module CopperEgg
 				widget_style 	= widget_type == "metric" ? "both" : "values"
 				name 					= options[:name] || "#{metric_group.label} Dashboard"
 
-				dashboard = new(name: name, is_database: (options[:is_database] || false))
+				dashboard = new(name: name, is_database: (options[:is_database] || false), service: (options[:service] || ''))
 				metrics.each.with_index do |metric, i|
 					metric_data = [metric.position, metric.name]
 					metric_data.push("rate") if metric.type == "ce_counter" || metric.type == "ce_counter_f"

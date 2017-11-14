@@ -1,3 +1,3 @@
 module CopperEgg
-  GEM_VERSION = "0.6.3"
+  GEM_VERSION = "0.6.4"
 end
